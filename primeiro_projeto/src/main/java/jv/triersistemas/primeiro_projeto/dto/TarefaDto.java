@@ -20,4 +20,12 @@ public class TarefaDto {
 		this.descricao = entity.getDescricao();
 		this.completa = entity.getCompleta();
 	}
+	
+	public TarefaDto atualizaRegistro(TarefaDto atualizacao) {
+		this.titulo = atualizacao.getTitulo();
+		this.descricao = atualizacao.getDescricao();
+		this.completa = atualizacao.getCompleta();
+		
+		return this;
+	}
 }

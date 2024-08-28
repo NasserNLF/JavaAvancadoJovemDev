@@ -1,6 +1,5 @@
 package jv.triersistemas.primeiro_projeto.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +19,21 @@ public class TarefaServiceImpl implements TarefaService {
 	private TarefaRepository repository;
 
 	@Override
-	public List<TarefaDto> getTarefas() {
+	public List<TarefaDto> getAllTarefas() {
 		return repository.findAll().stream().map(TarefaDto::new).toList();
 	}
 
 	@Override
-	public TarefaDto getTarefaEspecifica(Long id) {
-		var resultado = retornaBanco(id);
-		return new TarefaDto(resultado);
+	public TarefaDto getTarefa(Long id) {
+		//Chamando método para verificar existência no banco
+		return new TarefaDto(retornaBanco(id));
 	}
 
 	@Override
 	public TarefaDto postTarefa(TarefaDto tarefa) {
+		
 		var tarefaEntity = new TarefaEntity(tarefa);
+		
 		// Entidade persistida -> Depois de voltar do BD
 		TarefaEntity entidadePersistida = repository.save(tarefaEntity);
 
@@ -42,20 +43,13 @@ public class TarefaServiceImpl implements TarefaService {
 	@Override
 	public TarefaDto putTarefa(Long id, TarefaDto atualizacao) {
 		
-		var entidadeEspecializada = retornaBanco(id);
-
-		if (atualizacao.getTitulo() != null) {
-			entidadeEspecializada.setTitulo(atualizacao.getTitulo());
-		}
-		if (atualizacao.getDescricao() != null) {
-			entidadeEspecializada.setDescricao(atualizacao.getDescricao());
-		}
-		if (atualizacao.getCompleta() != null) {
-			entidadeEspecializada.setCompleta(atualizacao.getCompleta());
-		}
-
-		repository.save(entidadeEspecializada);
-		return new TarefaDto(entidadeEspecializada);
+		//Chamando método para verificar existência no banco
+		var tarefaDto = new TarefaDto(retornaBanco(id));
+		
+		tarefaDto.atualizaRegistro(atualizacao);
+		
+		repository.save(new TarefaEntity(tarefaDto));
+		return tarefaDto;
 
 	}
 
@@ -64,6 +58,7 @@ public class TarefaServiceImpl implements TarefaService {
 		repository.deleteById(id);
 	}
 	
+	//Verificação se o registro existe no banco
 	@Override
 	public TarefaEntity retornaBanco(Long id) {
 		return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Não existe nenhum registro com esse ID"));

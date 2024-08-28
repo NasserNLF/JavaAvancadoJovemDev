@@ -7,8 +7,8 @@ import jv.triersistemas.primeiro_projeto.entity.TarefaEntity;
 
 public interface TarefaService {
 	
-	List<TarefaDto> getTarefas();
-	TarefaDto getTarefaEspecifica(Long id);
+	List<TarefaDto> getAllTarefas();
+	TarefaDto getTarefa(Long id);
 	TarefaDto postTarefa(TarefaDto tarefa);
 	TarefaDto putTarefa(Long id,TarefaDto tarefa);
 	void deleteTarefa(Long id);

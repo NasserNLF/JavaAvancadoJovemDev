@@ -24,15 +24,14 @@ public class TarefaController {
 	private TarefaService tarefaService;
 
 	@GetMapping("/tarefas")
-	public List<TarefaDto> getTarefas() {
-		return tarefaService.getTarefas();
+	public List<TarefaDto> getAllTarefas() {
+		return tarefaService.getAllTarefas();
 	}
 
 	@GetMapping("/tarefas/{id}")
-	public ResponseEntity<?> getTarefaEspecifica(@PathVariable("id") Long id) {
-
+	public ResponseEntity<?> getTarefa(@PathVariable("id") Long id) {
 		try {
-			return ResponseEntity.ok(tarefaService.getTarefaEspecifica(id));
+			return ResponseEntity.ok(tarefaService.getTarefa(id));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -43,11 +42,10 @@ public class TarefaController {
 		return tarefaService.postTarefa(tarefa);
 	}
 
-	// Dúvida perguntar para o professor
 	@PutMapping("tarefas/{id}")
 	public ResponseEntity<?> putTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
 		try {
-			return ResponseEntity.ok(tarefaService.putTarefa(id));
+			return ResponseEntity.ok(tarefaService.putTarefa(id, atualizacao));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}

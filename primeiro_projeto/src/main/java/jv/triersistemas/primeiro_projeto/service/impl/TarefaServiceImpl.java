@@ -3,57 +3,69 @@ package jv.triersistemas.primeiro_projeto.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import jv.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jv.triersistemas.primeiro_projeto.entity.TarefaEntity;
+import jv.triersistemas.primeiro_projeto.repository.TarefaRepository;
 import jv.triersistemas.primeiro_projeto.service.TarefaService;
 
 @Primary
 @Service
 public class TarefaServiceImpl implements TarefaService {
 
-	private static List<TarefaDto> tarefas = new ArrayList<>();
-	private Long contador = 0L;
+	@Autowired
+	private TarefaRepository repository;
 
 	@Override
 	public List<TarefaDto> getTarefas() {
-		return tarefas;
+		return repository.findAll().stream().map(TarefaDto::new).toList();
 	}
 
 	@Override
 	public TarefaDto getTarefaEspecifica(Long id) {
-		return tarefas.stream().filter(t -> t.getId().equals(id)).findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Tarefa Inexistente"));
+		var resultado = retornaBanco(id);
+		return new TarefaDto(resultado);
 	}
 
 	@Override
 	public TarefaDto postTarefa(TarefaDto tarefa) {
-		tarefa.setId(++contador);
-		tarefas.add(tarefa);
+		var tarefaEntity = new TarefaEntity(tarefa);
+		// Entidade persistida -> Depois de voltar do BD
+		TarefaEntity entidadePersistida = repository.save(tarefaEntity);
 
-		return tarefa;
+		return new TarefaDto(entidadePersistida);
 	}
 
 	@Override
 	public TarefaDto putTarefa(Long id, TarefaDto atualizacao) {
-		TarefaDto tarefa = getTarefaEspecifica(id);
+		
+		var entidadeEspecializada = retornaBanco(id);
 
 		if (atualizacao.getTitulo() != null) {
-			tarefa.setTitulo(atualizacao.getTitulo());
+			entidadeEspecializada.setTitulo(atualizacao.getTitulo());
 		}
 		if (atualizacao.getDescricao() != null) {
-			tarefa.setDescricao(atualizacao.getDescricao());
+			entidadeEspecializada.setDescricao(atualizacao.getDescricao());
 		}
 		if (atualizacao.getCompleta() != null) {
-			tarefa.setCompleta(atualizacao.getCompleta());
+			entidadeEspecializada.setCompleta(atualizacao.getCompleta());
 		}
 
-		return tarefa;
+		repository.save(entidadeEspecializada);
+		return new TarefaDto(entidadeEspecializada);
+
 	}
 
 	@Override
 	public void deleteTarefa(Long id) {
-		tarefas.removeIf(t -> t.getId().equals(id));
+		repository.deleteById(id);
+	}
+	
+	@Override
+	public TarefaEntity retornaBanco(Long id) {
+		return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Não existe nenhum registro com esse ID"));
 	}
 }

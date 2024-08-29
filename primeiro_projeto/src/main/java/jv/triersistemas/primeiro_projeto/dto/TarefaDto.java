@@ -13,19 +13,22 @@ public class TarefaDto {
 	private String titulo;
 	private String descricao;
 	private Boolean completa;
+	private Long categoriaId;
 	
 	public TarefaDto(TarefaEntity entity) {
 		this.id = entity.getId();
 		this.titulo = entity.getTitulo();
 		this.descricao = entity.getDescricao();
 		this.completa = entity.getCompleta();
+		this.categoriaId = entity.getCategoria().getId();
 	}
 	
-	public TarefaDto atualizaRegistro(TarefaDto atualizacao) {
-		this.titulo = atualizacao.getTitulo();
-		this.descricao = atualizacao.getDescricao();
-		this.completa = atualizacao.getCompleta();
-		
-		return this;
-	}
+//	public TarefaDto atualizaRegistro(TarefaDto atualizacao) {
+//		this.titulo = atualizacao.getTitulo();
+//		this.descricao = atualizacao.getDescricao();
+//		this.completa = atualizacao.getCompleta();
+//		
+//		return this;
+//	}
+	
 }

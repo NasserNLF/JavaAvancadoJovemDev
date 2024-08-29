@@ -26,8 +26,11 @@ public class TarefaServiceImpl implements TarefaService {
 
 	@Override
 	public TarefaDto getTarefa(Long id) {
+		
 		// Chamando método para verificar existência no banco
-		return (retornaBanco(id).isPresent()) ? new TarefaDto(retornaBanco(id).get()) : null;
+		var tarefaOpcional = retornaBanco(id);
+
+		return tarefaOpcional.map(TarefaDto::new).orElse(null);
 	}
 
 	@Override

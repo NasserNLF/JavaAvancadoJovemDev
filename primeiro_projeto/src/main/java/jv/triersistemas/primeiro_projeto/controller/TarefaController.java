@@ -3,7 +3,6 @@ package jv.triersistemas.primeiro_projeto.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,12 +28,8 @@ public class TarefaController {
 	}
 
 	@GetMapping("/tarefas/{id}")
-	public ResponseEntity<?> getTarefa(@PathVariable("id") Long id) {
-		try {
-			return ResponseEntity.ok(tarefaService.getTarefa(id));
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public TarefaDto getTarefa(@PathVariable("id") Long id) {
+		return tarefaService.getTarefa(id);
 	}
 
 	@PostMapping("/tarefas")
@@ -43,12 +38,8 @@ public class TarefaController {
 	}
 
 	@PutMapping("tarefas/{id}")
-	public ResponseEntity<?> putTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
-		try {
-			return ResponseEntity.ok(tarefaService.putTarefa(id, atualizacao));
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public TarefaDto putTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
+		return tarefaService.putTarefa(id, atualizacao);
 	}
 
 	@DeleteMapping("/tarefas/{id}")

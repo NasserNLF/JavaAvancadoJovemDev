@@ -1,6 +1,7 @@
 package jv.triersistemas.primeiro_projeto.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -25,15 +26,15 @@ public class TarefaServiceImpl implements TarefaService {
 
 	@Override
 	public TarefaDto getTarefa(Long id) {
-		//Chamando método para verificar existência no banco
-		return new TarefaDto(retornaBanco(id));
+		// Chamando método para verificar existência no banco
+		return (retornaBanco(id).isPresent()) ? new TarefaDto(retornaBanco(id).get()) : null;
 	}
 
 	@Override
 	public TarefaDto postTarefa(TarefaDto tarefa) {
-		
+
 		var tarefaEntity = new TarefaEntity(tarefa);
-		
+
 		// Entidade persistida -> Depois de voltar do BD
 		TarefaEntity entidadePersistida = repository.save(tarefaEntity);
 
@@ -42,14 +43,22 @@ public class TarefaServiceImpl implements TarefaService {
 
 	@Override
 	public TarefaDto putTarefa(Long id, TarefaDto atualizacao) {
-		
-		//Chamando método para verificar existência no banco
-		var tarefaDto = new TarefaDto(retornaBanco(id));
-		
-		tarefaDto.atualizaRegistro(atualizacao);
-		
-		repository.save(new TarefaEntity(tarefaDto));
-		return tarefaDto;
+
+		// Chamando método para verificar existência no banco
+		Optional<TarefaEntity> tarefaEntity = retornaBanco(id);
+
+		if (tarefaEntity.isPresent()) {
+			
+			var tarefaDto = new TarefaDto(tarefaEntity.get());
+			
+			tarefaDto.atualizaRegistro(atualizacao);
+
+			repository.save(new TarefaEntity(tarefaDto));
+
+			return tarefaDto;
+		}
+
+		return null;
 
 	}
 
@@ -57,10 +66,10 @@ public class TarefaServiceImpl implements TarefaService {
 	public void deleteTarefa(Long id) {
 		repository.deleteById(id);
 	}
-	
-	//Verificação se o registro existe no banco
+
+	// Verificação se o registro existe no banco
 	@Override
-	public TarefaEntity retornaBanco(Long id) {
-		return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Não existe nenhum registro com esse ID"));
+	public Optional<TarefaEntity> retornaBanco(Long id) {
+		return repository.findById(id);
 	}
 }

@@ -44,7 +44,6 @@ public class CategoriaEntity {
     }
     
     public CategoriaEntity atualizaRegistro(CategoriaDto categoriaDto) {
-    	 this.id = categoriaDto.getId();
          this.nome = categoriaDto.getNome();
          this.descricao = categoriaDto.getDescricao();
          this.prioridade = categoriaDto.getPrioridade();

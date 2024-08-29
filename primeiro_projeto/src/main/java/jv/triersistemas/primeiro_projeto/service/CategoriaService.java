@@ -13,4 +13,5 @@ public interface CategoriaService {
 	CategoriaDto atualizarCategoria(Long id, CategoriaDto categoriaDto);
 	void deletarCategoria(Long id);
 	Optional<CategoriaEntity> buscaIdBanco(Long id);
+
 }

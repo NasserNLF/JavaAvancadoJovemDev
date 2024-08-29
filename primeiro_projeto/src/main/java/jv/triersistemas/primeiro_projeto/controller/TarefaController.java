@@ -1,8 +1,9 @@
-                                                     package jv.triersistemas.primeiro_projeto.controller;
+package jv.triersistemas.primeiro_projeto.controller;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,13 +34,22 @@ public class TarefaController {
 	}
 
 	@PostMapping("/tarefas")
-	public TarefaDto postTarefa(@RequestBody TarefaDto tarefa) {
-		return tarefaService.postTarefa(tarefa);
+	public ResponseEntity<?> postTarefa(@RequestBody TarefaDto tarefa) {
+		try {
+			return ResponseEntity.ok(tarefaService.postTarefa(tarefa));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
 	}
 
 	@PutMapping("tarefas/{id}")
-	public TarefaDto putTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
-		return tarefaService.putTarefa(id, atualizacao);
+	public ResponseEntity<?> putTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
+		try {
+			return ResponseEntity.ok(tarefaService.putTarefa(id, atualizacao));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@DeleteMapping("/tarefas/{id}")

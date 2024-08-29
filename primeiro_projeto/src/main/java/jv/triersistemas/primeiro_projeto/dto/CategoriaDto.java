@@ -17,7 +17,7 @@ public class CategoriaDto {
     private PrioridadeEnum prioridade;
 
     public CategoriaDto(CategoriaEntity categoriaEntity) {
-        this.id = categoriaEntity.getId();
+    	this.id = categoriaEntity.getId();
         this.nome = categoriaEntity.getNome();
         this.descricao = categoriaEntity.getDescricao();
         this.prioridade = categoriaEntity.getPrioridade();

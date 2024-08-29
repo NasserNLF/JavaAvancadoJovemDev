@@ -14,7 +14,8 @@ public interface TarefaService {
 	TarefaDto postTarefa(TarefaDto tarefa);
 	TarefaDto putTarefa(Long id,TarefaDto tarefa);
 	void deleteTarefa(Long id);
-	Optional<TarefaEntity> retornaBanco(Long id);
-	Optional<CategoriaEntity> retornaBancoCategoria(Long id);
+	Optional<TarefaEntity> retornaBancoTarefa(Long id);
+	CategoriaEntity verificaExistenciaCategoria(Long id);
+	List<TarefaEntity> retornaBancoTarefaByCategoria(Long id);
 }
 	

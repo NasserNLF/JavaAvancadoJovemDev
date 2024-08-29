@@ -57,6 +57,7 @@ public class TarefaServiceImpl  implements TarefaService {
 
 		// Chamando método para verificar existência no banco
 		Optional<TarefaEntity> tarefaEntity = retornaBancoTarefa(id);
+		
 		CategoriaEntity categoriaEntity = verificaExistenciaCategoria(atualizacao.getCategoriaId());
 
 		if (tarefaEntity.isPresent()) {
@@ -85,9 +86,5 @@ public class TarefaServiceImpl  implements TarefaService {
 		
 	}
 
-	@Override
-	public List<TarefaEntity> retornaBancoTarefaByCategoria(Long id) {
-		return tarefaRepository.findByCategoriaId(id);
-	}
 
 }

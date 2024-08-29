@@ -19,36 +19,35 @@ import jv.triersistemas.primeiro_projeto.service.CategoriaService;
 @RestController
 @RequestMapping("/categoria-controller")
 public class CategoriaController {
-	
+
 	@Autowired
 	private CategoriaService categoriaService;
-	
-	//Cadastrar Nova Categoria
+
+	// Cadastrar Nova Categoria
 	@PostMapping("/cadastro")
 	public CategoriaDto salvarCategoria(@RequestBody CategoriaDto categoriaDto) {
 		return categoriaService.salvarCategoria(categoriaDto);
 	}
-	
-	
-	//Buscar Todas as categorias
+
+	// Buscar Todas as categorias
 	@GetMapping("/busca-cadastro")
 	public List<CategoriaDto> buscarTodasCategorias() {
 		return categoriaService.buscarTodasCategoria();
 	}
-	
-	//Buscar Categoria Específica
+
+	// Buscar Categoria Específica
 	@GetMapping("/busca-cadastro/{id}")
 	public CategoriaDto buscaCategoria(@PathVariable Long id) {
 		return categoriaService.buscarCategoria(id);
 	}
-	
-	//Alterar Categoria
+
+	// Alterar Categoria
 	@PutMapping("/atualiza-cadastro/{id}")
 	public CategoriaDto atualizarCategoria(@PathVariable Long id, @RequestBody CategoriaDto categoriaDto) {
 		return categoriaService.atualizarCategoria(id, categoriaDto);
 	}
-	
-	//Deletar Categoria
+
+	// Deletar Categoria
 	@DeleteMapping("/deleta-cadastro/{id}")
 	public ResponseEntity<?> deletarCategoria(@PathVariable Long id) {
 		try {
@@ -57,25 +56,7 @@ public class CategoriaController {
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

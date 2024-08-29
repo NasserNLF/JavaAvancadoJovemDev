@@ -16,6 +16,5 @@ public interface TarefaService {
 	void deleteTarefa(Long id);
 	Optional<TarefaEntity> retornaBancoTarefa(Long id);
 	CategoriaEntity verificaExistenciaCategoria(Long id);
-	List<TarefaEntity> retornaBancoTarefaByCategoria(Long id);
 }
 	

@@ -1,8 +1,10 @@
 package jv.triersistemas.primeiro_projeto.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,41 +25,69 @@ public class TarefaController {
 	@Autowired
 	private TarefaService tarefaService;
 
+	// POST
+	@PostMapping("/tarefas")
+	public ResponseEntity<?> salvarTarefa(@RequestBody TarefaDto tarefa) {
+		try {
+			return ResponseEntity.ok(tarefaService.salvarTarefa(tarefa));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
+	}
+
+	// GET
+
 	@GetMapping("/tarefas")
-	public List<TarefaDto> getAllTarefas() {
-		return tarefaService.getAllTarefas();
+	public List<TarefaDto> buscarTodasTarefas() {
+		return tarefaService.buscarTodasTarefas();
 	}
 
 	@GetMapping("/tarefas/{id}")
-	public TarefaDto getTarefa(@PathVariable("id") Long id) {
-		return tarefaService.getTarefa(id);
+	public TarefaDto buscarTarefa(@PathVariable("id") Long id) {
+		return tarefaService.buscarTarefa(id);
 	}
-
-	@PostMapping("/tarefas")
-	public ResponseEntity<?> postTarefa(@RequestBody TarefaDto tarefa) {
+	
+	@GetMapping("/tarefas-incompletas")
+	public List<TarefaDto> buscarTarefasIncompletas(){
+		return tarefaService.buscarTarefasIncompletas();
+	}
+	
+	@GetMapping("/tarefas-titulo/{titulo}")
+	public ResponseEntity<?> buscarTarefaTitulo(@PathVariable("titulo") String titulo) {
 		try {
-			return ResponseEntity.ok(tarefaService.postTarefa(tarefa));
+			return ResponseEntity.ok(tarefaService.buscarTarefaTitulo(titulo));
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
-
 	}
+	
+	@GetMapping("/tarefas-status")
+	public Map<Boolean, Long> buscarTarefasStatus(){
+		return tarefaService.buscarTarefasStatus();
+	}
+	
+	@GetMapping("/tarefas-expirando/{dias}")
+	public List<TarefaDto> buscarTarefasExpirando(@PathVariable("dias") Long dias){
+		return tarefaService.buscarTarefasExpiramBreve(dias);
+	}
+	
+	// PUT
 
 	@PutMapping("tarefas/{id}")
-	public ResponseEntity<?> putTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
+	public ResponseEntity<?> atualizarTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
 		try {
-			return ResponseEntity.ok(tarefaService.putTarefa(id, atualizacao));
+			return ResponseEntity.ok(tarefaService.atualizarTarefa(id, atualizacao));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
 
+	// DELETE
+
 	@DeleteMapping("/tarefas/{id}")
-	public void deleteTarefa(@PathVariable("id") Long id) {
-		tarefaService.deleteTarefa(id);
+	public void deletarTarefa(@PathVariable("id") Long id) {
+		tarefaService.deletarTarefa(id);
 	}
-	
-	
-	
 
 }

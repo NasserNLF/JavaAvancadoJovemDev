@@ -3,6 +3,7 @@ package jv.triersistemas.primeiro_projeto.entity;
 import java.time.LocalDate;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -27,10 +28,19 @@ public class TarefaEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+	@Column(nullable = false)
 	private String titulo;
+	
+	@Column(nullable = false)
 	private String descricao;
+	
+	@Column(nullable = false)
 	private Boolean completa;
+	
+	@Column(nullable = false)
 	private LocalDate dataInicio;
+	
+	@Column(nullable = false)
 	private LocalDate dataFim;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)

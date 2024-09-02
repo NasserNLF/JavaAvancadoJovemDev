@@ -1,6 +1,7 @@
 package jv.triersistemas.primeiro_projeto.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import jv.triersistemas.primeiro_projeto.dto.CategoriaDto;
@@ -14,4 +15,5 @@ public interface CategoriaService {
 	void deletarCategoria(Long id);
 	Optional<CategoriaEntity> buscaIdBanco(Long id);
 
+	Map<CategoriaDto, Integer> buscarContagemTarefaCategoria();
 }

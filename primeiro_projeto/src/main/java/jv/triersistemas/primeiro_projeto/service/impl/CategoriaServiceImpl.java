@@ -1,6 +1,8 @@
 package jv.triersistemas.primeiro_projeto.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,16 @@ public class CategoriaServiceImpl implements CategoriaService {
 		return (categoriaEntity.isPresent()) ? new CategoriaDto(categoriaEntity.get()) : null;
 	}
 	
+	@Override
+	public Map<CategoriaDto, Integer> buscarContagemTarefaCategoria() {
+		
+		Map<CategoriaDto, Integer> mapa = new HashMap<>();
+		
+		categoriaRepository.findAll().forEach(c -> mapa.put(new CategoriaDto(c), c.getTarefas().size()));
+		
+		return mapa;
+	}
+	
 	//PUT
 	
 	@Override
@@ -64,6 +76,8 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		return null;
 	}
+	
+	
 	
 	//DELETE
 
@@ -89,5 +103,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 	public Optional<CategoriaEntity> buscaIdBanco(Long id) {
 		return categoriaRepository.findById(id);
 	}
+
+
 
 }

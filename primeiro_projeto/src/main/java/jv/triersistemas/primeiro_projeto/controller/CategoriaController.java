@@ -1,6 +1,7 @@
 package jv.triersistemas.primeiro_projeto.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,35 +23,40 @@ public class CategoriaController {
 
 	@Autowired
 	private CategoriaService categoriaService;
-	
-	//POST
-	
+
+	// POST
+
 	@PostMapping("/cadastro")
 	public CategoriaDto salvarCategoria(@RequestBody CategoriaDto categoriaDto) {
 		return categoriaService.salvarCategoria(categoriaDto);
 	}
 
-	//GET
-	
+	// GET
+
 	@GetMapping("/busca-cadastro")
 	public List<CategoriaDto> buscarTodasCategorias() {
 		return categoriaService.buscarTodasCategoria();
 	}
 
 	@GetMapping("/busca-cadastro/{id}")
-	public CategoriaDto buscaCategoria(@PathVariable Long id) {
+	public CategoriaDto buscarCategoria(@PathVariable Long id) {
 		return categoriaService.buscarCategoria(id);
 	}
-	
-	//PUT
+
+	@GetMapping("/busca-contagem")
+	public Map<CategoriaDto, Integer> buscarContagemTarefaCategoria() {
+		return categoriaService.buscarContagemTarefaCategoria();
+	}
+
+	// PUT
 
 	@PutMapping("/atualiza-cadastro/{id}")
 	public CategoriaDto atualizarCategoria(@PathVariable Long id, @RequestBody CategoriaDto categoriaDto) {
 		return categoriaService.atualizarCategoria(id, categoriaDto);
 	}
 
-	//DELETE
-	
+	// DELETE
+
 	@DeleteMapping("/deleta-cadastro/{id}")
 	public ResponseEntity<?> deletarCategoria(@PathVariable Long id) {
 		try {
@@ -61,7 +67,5 @@ public class CategoriaController {
 		}
 
 	}
-	
-	
 
 }

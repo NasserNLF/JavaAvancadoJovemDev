@@ -1,10 +1,9 @@
 package jv.triersistemas.primeiro_projeto.service.impl;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -19,7 +18,7 @@ import jv.triersistemas.primeiro_projeto.service.TarefaService;
 
 @Primary
 @Service
-public class TarefaServiceImpl  implements TarefaService {
+public class TarefaServiceImpl implements TarefaService {
 
 	@Autowired
 	private TarefaRepository tarefaRepository;
@@ -27,97 +26,109 @@ public class TarefaServiceImpl  implements TarefaService {
 	@Autowired
 	private CategoriaService categoriaService;
 
-	//POST
-	
+	// POST
+
 	@Override
-	public TarefaDto postTarefa(TarefaDto tarefa) {
-		
-		var categoriaOptional = verificaExistenciaCategoria(tarefa.getCategoriaId());
-		
+	public TarefaDto salvarTarefa(TarefaDto tarefa) {
+
 		verificaDatas(tarefa.getDataInicio(), tarefa.getDataFim());
-		
+
+		var categoria = verificaExistenciaCategoria(tarefa.getCategoriaId());
+
 		// Entidade persistida -> Depois de voltar do BD
-		var tarefaEntity = new TarefaEntity(tarefa, categoriaOptional);
-		
-		TarefaEntity entidadePersistida = tarefaRepository.save(tarefaEntity);
-		
-		return new TarefaDto(entidadePersistida);
-		
+		var tarefaEntity = new TarefaEntity(tarefa, categoria);
+
+		return new TarefaDto(tarefaRepository.save(tarefaEntity));
+
 	}
-	
-	//GET
-	
+
+	// GET
+
 	@Override
-	public List<TarefaDto> getAllTarefas() {
+	public List<TarefaDto> buscarTodasTarefas() {
 		return tarefaRepository.findAll().stream().map(TarefaDto::new).toList();
 	}
 
 	@Override
-	public TarefaDto getTarefa(Long id) {
-
-		// Chamando método para verificar existência no banco
-		var tarefaOpcional = retornaBancoTarefa(id);
-
-		return tarefaOpcional.map(TarefaDto::new).orElse(null);
+	public TarefaDto buscarTarefa(Long id) {
+		return new TarefaDto(retornaBancoTarefa(id));
 	}
-	
+
 	@Override
-	public TarefaDto getTarefasIncompletas() {
-		List<TarefaDto> dto = new ArrayList<TarefaDto>();
-		var listaGeral = tarefaRepository.findAll();
-		
-		for(TarefaEntity t : listaGeral) {
-			
+	public List<TarefaDto> buscarTarefasIncompletas() {
+		return tarefaRepository.findAll().stream().filter(t -> t.getCompleta() == false)
+				.map(TarefaDto::new).toList();
+	}
+
+	@Override
+	public List<TarefaDto> buscarTarefaTitulo(String titulo) {
+		var tarefasEntity = tarefaRepository.findAllByTitulo(titulo);
+
+		if (tarefasEntity.isEmpty()) {
+			throw new IllegalArgumentException("Nenhuma tarefa existe com esse título");
 		}
+
+		return tarefasEntity.stream().map(TarefaDto::new).toList();
 	}
-	
-	
-	//PUT
 
 	@Override
-	public TarefaDto putTarefa(Long id, TarefaDto atualizacao)  {
+	public List<TarefaDto> buscarTarefasExpiramBreve(Long dias) {
+		return buscarTodasTarefas().stream().filter(t -> t.getDataFim().isBefore(LocalDate.now().plusDays(dias)))
+				.toList();
+	}
+
+	@Override
+	public Map<Boolean, Long> buscarTarefasStatus() {
+		Map<Boolean, Long> mapa = new HashMap<>();
+
+		mapa.put(true, tarefaRepository.countByCompleta(true));
+		mapa.put(false, tarefaRepository.countByCompleta(false));
+
+		return mapa;
+	}
+
+	// PUT
+
+	@Override
+	public TarefaDto atualizarTarefa(Long id, TarefaDto atualizacao) {
 
 		// Chamando método para verificar existência no banco
-		Optional<TarefaEntity> tarefaEntity = retornaBancoTarefa(id);
-		
+		var tarefaEntity = retornaBancoTarefa(id);
+
 		CategoriaEntity categoriaEntity = verificaExistenciaCategoria(atualizacao.getCategoriaId());
 
-		if (tarefaEntity.isPresent()) {
+		return new TarefaDto(tarefaRepository.save(tarefaEntity.atualizaRegistro(atualizacao, categoriaEntity)));
 
-			tarefaRepository.save(tarefaEntity.get().atualizaRegistro(atualizacao, categoriaEntity));
-
-			return new TarefaDto(tarefaEntity.get());
-		}
-		return null;
 	}
 
-	//DELETE
-	
+	// DELETE
+
 	@Override
-	public void deleteTarefa(Long id){
+	public void deletarTarefa(Long id) {
 		tarefaRepository.deleteById(id);
 	}
 
 	/*
 	 * Validações
 	 */
-	
-	public Optional<TarefaEntity> retornaBancoTarefa(Long id) {
-		return tarefaRepository.findById(id);
+
+	public TarefaEntity retornaBancoTarefa(Long id) {
+		return tarefaRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("ERRO: A tarefa não existe nos registros"));
 	}
 
-	public CategoriaEntity verificaExistenciaCategoria(Long id)  {
-		return categoriaService.buscaIdBanco(id).orElseThrow(() -> new IllegalArgumentException("ERRO: A categoria não existe. Escolha uma categoria válida"));
+	public CategoriaEntity verificaExistenciaCategoria(Long id) {
+		return categoriaService.buscaIdBanco(id).orElseThrow(
+				() -> new IllegalArgumentException("ERRO: A categoria não existe. Escolha uma categoria válida"));
 	}
-	
+
 	public void verificaDatas(LocalDate dataCriacao, LocalDate dataFim) {
-		if (dataCriacao != LocalDate.now()) {
+		if (!dataCriacao.isEqual(LocalDate.now())) {
 			throw new IllegalArgumentException("ERRO: A data de criação deve ser igual a HOJE");
 		}
 		if (!dataFim.isAfter(dataCriacao)) {
 			throw new IllegalArgumentException("ERRO: A data de expiração deve ser após a data de criação");
 		}
 	}
-
 
 }

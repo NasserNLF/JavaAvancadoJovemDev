@@ -22,32 +22,35 @@ public class CategoriaController {
 
 	@Autowired
 	private CategoriaService categoriaService;
-
-	// Cadastrar Nova Categoria
+	
+	//POST
+	
 	@PostMapping("/cadastro")
 	public CategoriaDto salvarCategoria(@RequestBody CategoriaDto categoriaDto) {
 		return categoriaService.salvarCategoria(categoriaDto);
 	}
 
-	// Buscar Todas as categorias
+	//GET
+	
 	@GetMapping("/busca-cadastro")
 	public List<CategoriaDto> buscarTodasCategorias() {
 		return categoriaService.buscarTodasCategoria();
 	}
 
-	// Buscar Categoria Específica
 	@GetMapping("/busca-cadastro/{id}")
 	public CategoriaDto buscaCategoria(@PathVariable Long id) {
 		return categoriaService.buscarCategoria(id);
 	}
+	
+	//PUT
 
-	// Alterar Categoria
 	@PutMapping("/atualiza-cadastro/{id}")
 	public CategoriaDto atualizarCategoria(@PathVariable Long id, @RequestBody CategoriaDto categoriaDto) {
 		return categoriaService.atualizarCategoria(id, categoriaDto);
 	}
 
-	// Deletar Categoria
+	//DELETE
+	
 	@DeleteMapping("/deleta-cadastro/{id}")
 	public ResponseEntity<?> deletarCategoria(@PathVariable Long id) {
 		try {
@@ -58,5 +61,7 @@ public class CategoriaController {
 		}
 
 	}
+	
+	
 
 }

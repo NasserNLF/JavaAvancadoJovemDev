@@ -18,7 +18,9 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 	@Autowired
 	private CategoriaRepository categoriaRepository;
-
+	
+	//POST
+	
 	@Override
 	public CategoriaDto salvarCategoria(CategoriaDto categoriaDto) {
 
@@ -27,6 +29,9 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		return new CategoriaDto(categoriaEntity);
 	}
+	
+	
+	//GET
 
 	@Override
 	public List<CategoriaDto> buscarTodasCategoria() {
@@ -40,7 +45,9 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		return (categoriaEntity.isPresent()) ? new CategoriaDto(categoriaEntity.get()) : null;
 	}
-
+	
+	//PUT
+	
 	@Override
 	public CategoriaDto atualizarCategoria(Long id, CategoriaDto categoriaDto) throws RuntimeException {
 
@@ -57,6 +64,8 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		return null;
 	}
+	
+	//DELETE
 
 	@Override
 	public void deletarCategoria(Long id) throws RuntimeException {
@@ -71,6 +80,10 @@ public class CategoriaServiceImpl implements CategoriaService {
 		}
 
 	}
+	
+	/*
+	 * VALIDAÇÕES
+	 */
 
 	@Override
 	public Optional<CategoriaEntity> buscaIdBanco(Long id) {

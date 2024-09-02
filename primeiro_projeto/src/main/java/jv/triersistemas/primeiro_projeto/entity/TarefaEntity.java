@@ -1,5 +1,7 @@
 package jv.triersistemas.primeiro_projeto.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,6 +30,8 @@ public class TarefaEntity {
 	private String titulo;
 	private String descricao;
 	private Boolean completa;
+	private LocalDate dataInicio;
+	private LocalDate dataFim;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "categoria_id", nullable = false)
@@ -39,6 +43,8 @@ public class TarefaEntity {
 		this.descricao = dto.getDescricao();
 		this.completa = dto.getCompleta();
 		this.categoria = categoria;
+		this.dataInicio = dto.getDataInicio();
+		this.dataFim = dto.getDataFim();
 	}
 	
 	public TarefaEntity atualizaRegistro(TarefaDto atualizacao, CategoriaEntity categoriaEntity) {
@@ -46,6 +52,8 @@ public class TarefaEntity {
 		this.descricao = atualizacao.getDescricao();
 		this.completa = atualizacao.getCompleta();
 		this.categoria = categoriaEntity;
+		this.dataInicio = atualizacao.getDataInicio();
+		this.dataFim = atualizacao.getDataFim();
 		
 		return this;
 	}

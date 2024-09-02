@@ -1,5 +1,8 @@
 package jv.triersistemas.primeiro_projeto.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +27,26 @@ public class TarefaServiceImpl  implements TarefaService {
 	@Autowired
 	private CategoriaService categoriaService;
 
+	//POST
+	
+	@Override
+	public TarefaDto postTarefa(TarefaDto tarefa) {
+		
+		var categoriaOptional = verificaExistenciaCategoria(tarefa.getCategoriaId());
+		
+		verificaDatas(tarefa.getDataInicio(), tarefa.getDataFim());
+		
+		// Entidade persistida -> Depois de voltar do BD
+		var tarefaEntity = new TarefaEntity(tarefa, categoriaOptional);
+		
+		TarefaEntity entidadePersistida = tarefaRepository.save(tarefaEntity);
+		
+		return new TarefaDto(entidadePersistida);
+		
+	}
+	
+	//GET
+	
 	@Override
 	public List<TarefaDto> getAllTarefas() {
 		return tarefaRepository.findAll().stream().map(TarefaDto::new).toList();
@@ -37,23 +60,22 @@ public class TarefaServiceImpl  implements TarefaService {
 
 		return tarefaOpcional.map(TarefaDto::new).orElse(null);
 	}
-
+	
 	@Override
-	public TarefaDto postTarefa(TarefaDto tarefa) throws RuntimeException {
-
-		var categoriaOptional = verificaExistenciaCategoria(tarefa.getCategoriaId());
-
-		// Entidade persistida -> Depois de voltar do BD
-		var tarefaEntity = new TarefaEntity(tarefa, categoriaOptional);
-
-		TarefaEntity entidadePersistida = tarefaRepository.save(tarefaEntity);
-
-		return new TarefaDto(entidadePersistida);
-
+	public TarefaDto getTarefasIncompletas() {
+		List<TarefaDto> dto = new ArrayList<TarefaDto>();
+		var listaGeral = tarefaRepository.findAll();
+		
+		for(TarefaEntity t : listaGeral) {
+			
+		}
 	}
+	
+	
+	//PUT
 
 	@Override
-	public TarefaDto putTarefa(Long id, TarefaDto atualizacao) throws RuntimeException {
+	public TarefaDto putTarefa(Long id, TarefaDto atualizacao)  {
 
 		// Chamando método para verificar existência no banco
 		Optional<TarefaEntity> tarefaEntity = retornaBancoTarefa(id);
@@ -69,21 +91,32 @@ public class TarefaServiceImpl  implements TarefaService {
 		return null;
 	}
 
+	//DELETE
+	
 	@Override
 	public void deleteTarefa(Long id){
 		tarefaRepository.deleteById(id);
 	}
 
-	// Verificação se o registro existe no banco
-	@Override
+	/*
+	 * Validações
+	 */
+	
 	public Optional<TarefaEntity> retornaBancoTarefa(Long id) {
 		return tarefaRepository.findById(id);
 	}
 
-	@Override
-	public CategoriaEntity verificaExistenciaCategoria(Long id) throws RuntimeException {
+	public CategoriaEntity verificaExistenciaCategoria(Long id)  {
 		return categoriaService.buscaIdBanco(id).orElseThrow(() -> new IllegalArgumentException("ERRO: A categoria não existe. Escolha uma categoria válida"));
-		
+	}
+	
+	public void verificaDatas(LocalDate dataCriacao, LocalDate dataFim) {
+		if (dataCriacao != LocalDate.now()) {
+			throw new IllegalArgumentException("ERRO: A data de criação deve ser igual a HOJE");
+		}
+		if (!dataFim.isAfter(dataCriacao)) {
+			throw new IllegalArgumentException("ERRO: A data de expiração deve ser após a data de criação");
+		}
 	}
 
 

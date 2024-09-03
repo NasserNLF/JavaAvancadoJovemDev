@@ -33,7 +33,7 @@ public class TarefaServiceImpl implements TarefaService {
 
 		verificaDatas(tarefa.getDataInicio(), tarefa.getDataFim());
 
-		var categoria = verificaExistenciaCategoria(tarefa.getCategoriaId());
+		var categoria = categoriaService.buscaIdBanco(tarefa.getCategoriaId());
 
 		// Entidade persistida -> Depois de voltar do BD
 		var tarefaEntity = new TarefaEntity(tarefa, categoria);
@@ -55,9 +55,20 @@ public class TarefaServiceImpl implements TarefaService {
 	}
 
 	@Override
-	public List<TarefaDto> buscarTarefasIncompletas() {
-		return tarefaRepository.findAll().stream().filter(t -> t.getCompleta() == false)
-				.map(TarefaDto::new).toList();
+	public List<TarefaDto> buscarTarefasIncompletas(Long id) {
+		
+//		var categoria = categoriaService.buscaIdBanco(id);
+		
+		//TODO Fazer verificação para buscar por categoria
+		
+//		if () {
+//			
+//		}
+		
+//		return tarefaRepository.findAllByCategoria(categoria.get()).stream().filter(t -> t.getCompleta() == false)
+//				.map(TarefaDto::new).toList();
+		
+		return null;
 	}
 
 	@Override
@@ -95,7 +106,7 @@ public class TarefaServiceImpl implements TarefaService {
 		// Chamando método para verificar existência no banco
 		var tarefaEntity = retornaBancoTarefa(id);
 
-		CategoriaEntity categoriaEntity = verificaExistenciaCategoria(atualizacao.getCategoriaId());
+		CategoriaEntity categoriaEntity = categoriaService.buscaIdBanco(atualizacao.getCategoriaId());
 
 		return new TarefaDto(tarefaRepository.save(tarefaEntity.atualizaRegistro(atualizacao, categoriaEntity)));
 
@@ -117,11 +128,6 @@ public class TarefaServiceImpl implements TarefaService {
 				.orElseThrow(() -> new IllegalArgumentException("ERRO: A tarefa não existe nos registros"));
 	}
 
-	public CategoriaEntity verificaExistenciaCategoria(Long id) {
-		return categoriaService.buscaIdBanco(id).orElseThrow(
-				() -> new IllegalArgumentException("ERRO: A categoria não existe. Escolha uma categoria válida"));
-	}
-
 	public void verificaDatas(LocalDate dataCriacao, LocalDate dataFim) {
 		if (!dataCriacao.isEqual(LocalDate.now())) {
 			throw new IllegalArgumentException("ERRO: A data de criação deve ser igual a HOJE");
@@ -130,5 +136,11 @@ public class TarefaServiceImpl implements TarefaService {
 			throw new IllegalArgumentException("ERRO: A data de expiração deve ser após a data de criação");
 		}
 	}
+
+	
+
+	
+
+	
 
 }

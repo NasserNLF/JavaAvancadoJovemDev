@@ -20,9 +20,9 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 	@Autowired
 	private CategoriaRepository categoriaRepository;
-	
-	//POST
-	
+
+	// POST
+
 	@Override
 	public CategoriaDto salvarCategoria(CategoriaDto categoriaDto) {
 
@@ -31,9 +31,8 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		return new CategoriaDto(categoriaEntity);
 	}
-	
-	
-	//GET
+
+	// GET
 
 	@Override
 	public List<CategoriaDto> buscarTodasCategoria() {
@@ -47,39 +46,33 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		return (categoriaEntity.isPresent()) ? new CategoriaDto(categoriaEntity.get()) : null;
 	}
-	
+
 	@Override
 	public Map<CategoriaDto, Integer> buscarContagemTarefaCategoria() {
-		
+
 		Map<CategoriaDto, Integer> mapa = new HashMap<>();
-		
+
 		categoriaRepository.findAll().forEach(c -> mapa.put(new CategoriaDto(c), c.getTarefas().size()));
-		
+
 		return mapa;
 	}
-	
-	//PUT
-	
+
+	// PUT
+
 	@Override
 	public CategoriaDto atualizarCategoria(Long id, CategoriaDto categoriaDto) throws RuntimeException {
 
 		var categoriaEntityOptional = buscaIdBanco(id);
 
-		if (categoriaEntityOptional.isPresent()) {
+		var categoriaEntity = categoriaEntityOptional.atualizaRegistro(categoriaDto);
 
-			var categoriaEntity = categoriaEntityOptional.get().atualizaRegistro(categoriaDto);
+		categoriaRepository.save(categoriaEntity);
 
-			categoriaRepository.save(categoriaEntity);
+		return new CategoriaDto(categoriaEntity);
 
-			return new CategoriaDto(categoriaEntity);
-		}
-
-		return null;
 	}
-	
-	
-	
-	//DELETE
+
+	// DELETE
 
 	@Override
 	public void deletarCategoria(Long id) throws RuntimeException {
@@ -94,16 +87,22 @@ public class CategoriaServiceImpl implements CategoriaService {
 		}
 
 	}
-	
+
 	/*
 	 * VALIDAÇÕES
 	 */
 
 	@Override
-	public Optional<CategoriaEntity> buscaIdBanco(Long id) {
-		return categoriaRepository.findById(id);
+	public CategoriaEntity buscaIdBanco(Long id) {
+
+		var categoria = categoriaRepository.findById(id);
+
+		if (categoria.isEmpty()) {
+			throw new IllegalArgumentException("ERRO: A categoria não existe");
+		}
+
+		return categoria.get();
+
 	}
-
-
 
 }

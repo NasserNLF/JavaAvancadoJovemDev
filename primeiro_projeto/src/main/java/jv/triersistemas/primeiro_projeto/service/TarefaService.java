@@ -13,10 +13,11 @@ public interface TarefaService {
 	TarefaDto atualizarTarefa(Long id,TarefaDto tarefa);
 	void deletarTarefa(Long id);
 	
-	List<TarefaDto> buscarTarefasIncompletas();
 	List<TarefaDto> buscarTarefaTitulo(String titulo);
 	List<TarefaDto> buscarTarefasExpiramBreve(Long dias);
 	Map<Boolean, Long> buscarTarefasStatus();
+	List<TarefaDto> buscarTarefasIncompletas(Long id);
+
 	
 	
 }

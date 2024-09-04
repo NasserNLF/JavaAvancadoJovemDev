@@ -44,7 +44,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 		var categoriaEntity = buscaIdBanco(id);
 
-		return (categoriaEntity.isPresent()) ? new CategoriaDto(categoriaEntity.get()) : null;
+		return new CategoriaDto(categoriaEntity);
 	}
 
 	@Override

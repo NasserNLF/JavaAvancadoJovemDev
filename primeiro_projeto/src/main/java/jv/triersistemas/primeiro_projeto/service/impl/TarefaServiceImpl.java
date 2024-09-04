@@ -20,127 +20,114 @@ import jv.triersistemas.primeiro_projeto.service.TarefaService;
 @Service
 public class TarefaServiceImpl implements TarefaService {
 
-	@Autowired
-	private TarefaRepository tarefaRepository;
+    @Autowired
+    private TarefaRepository tarefaRepository;
 
-	@Autowired
-	private CategoriaService categoriaService;
+    @Autowired
+    private CategoriaService categoriaService;
 
-	// POST
+    // POST
 
-	@Override
-	public TarefaDto salvarTarefa(TarefaDto tarefa) {
+    @Override
+    public TarefaDto salvarTarefa(TarefaDto tarefa) {
 
-		verificaDatas(tarefa.getDataInicio(), tarefa.getDataFim());
+        verificaDatas(tarefa.getDataInicio(), tarefa.getDataFim());
 
-		var categoria = categoriaService.buscaIdBanco(tarefa.getCategoriaId());
+        var categoria = categoriaService.buscaIdBanco(tarefa.getCategoriaId());
 
-		// Entidade persistida -> Depois de voltar do BD
-		var tarefaEntity = new TarefaEntity(tarefa, categoria);
+        // Entidade persistida -> Depois de voltar do BD
+        var tarefaEntity = new TarefaEntity(tarefa, categoria);
 
-		return new TarefaDto(tarefaRepository.save(tarefaEntity));
+        return new TarefaDto(tarefaRepository.save(tarefaEntity));
 
-	}
+    }
 
-	// GET
+    // GET
 
-	@Override
-	public List<TarefaDto> buscarTodasTarefas() {
-		return tarefaRepository.findAll().stream().map(TarefaDto::new).toList();
-	}
+    @Override
+    public List<TarefaDto> buscarTodasTarefas() {
+        return tarefaRepository.findAll().stream().map(TarefaDto::new).toList();
+    }
 
-	@Override
-	public TarefaDto buscarTarefa(Long id) {
-		return new TarefaDto(retornaBancoTarefa(id));
-	}
+    @Override
+    public TarefaDto buscarTarefa(Long id) {
+        return new TarefaDto(retornaBancoTarefa(id));
+    }
 
-	@Override
-	public List<TarefaDto> buscarTarefasIncompletas(Long id) {
-		
-//		var categoria = categoriaService.buscaIdBanco(id);
-		
-		//TODO Fazer verificação para buscar por categoria
-		
-//		if () {
-//			
-//		}
-		
-//		return tarefaRepository.findAllByCategoria(categoria.get()).stream().filter(t -> t.getCompleta() == false)
-//				.map(TarefaDto::new).toList();
-		
-		return null;
-	}
+    @Override
+    public List<TarefaDto> buscarTarefasIncompletas(Long id) {
 
-	@Override
-	public List<TarefaDto> buscarTarefaTitulo(String titulo) {
-		var tarefasEntity = tarefaRepository.findAllByTitulo(titulo);
+        var categoria = categoriaService.buscaIdBanco(id);
 
-		if (tarefasEntity.isEmpty()) {
-			throw new IllegalArgumentException("Nenhuma tarefa existe com esse título");
-		}
+        return tarefaRepository.findAllByCategoria(categoria).stream().filter(t -> t.getCompleta().equals(false)).map(TarefaDto::new).toList();
 
-		return tarefasEntity.stream().map(TarefaDto::new).toList();
-	}
+    }
 
-	@Override
-	public List<TarefaDto> buscarTarefasExpiramBreve(Long dias) {
-		return buscarTodasTarefas().stream().filter(t -> t.getDataFim().isBefore(LocalDate.now().plusDays(dias)))
-				.toList();
-	}
+    @Override
+    public List<TarefaDto> buscarTarefaTitulo(String titulo) {
+        var tarefasEntity = tarefaRepository.findAllByTitulo(titulo);
 
-	@Override
-	public Map<Boolean, Long> buscarTarefasStatus() {
-		Map<Boolean, Long> mapa = new HashMap<>();
+        if (tarefasEntity.isEmpty()) {
+            throw new IllegalArgumentException("Nenhuma tarefa existe com esse título");
+        }
 
-		mapa.put(true, tarefaRepository.countByCompleta(true));
-		mapa.put(false, tarefaRepository.countByCompleta(false));
+        return tarefasEntity.stream().map(TarefaDto::new).toList();
+    }
 
-		return mapa;
-	}
+    @Override
+    public List<TarefaDto> buscarTarefasExpiramBreve(Long dias) {
+        return buscarTodasTarefas().stream().filter(t -> t.getDataFim().isBefore(LocalDate.now().plusDays(dias)))
+                .toList();
+    }
 
-	// PUT
+    @Override
+    public Map<Boolean, Long> buscarTarefasStatus() {
+        Map<Boolean, Long> mapa = new HashMap<>();
 
-	@Override
-	public TarefaDto atualizarTarefa(Long id, TarefaDto atualizacao) {
+        mapa.put(true, tarefaRepository.countByCompleta(true));
+        mapa.put(false, tarefaRepository.countByCompleta(false));
 
-		// Chamando método para verificar existência no banco
-		var tarefaEntity = retornaBancoTarefa(id);
+        return mapa;
+    }
 
-		CategoriaEntity categoriaEntity = categoriaService.buscaIdBanco(atualizacao.getCategoriaId());
+    // PUT
 
-		return new TarefaDto(tarefaRepository.save(tarefaEntity.atualizaRegistro(atualizacao, categoriaEntity)));
+    @Override
+    public TarefaDto atualizarTarefa(Long id, TarefaDto atualizacao) {
 
-	}
+        // Chamando método para verificar existência no banco
+        var tarefaEntity = retornaBancoTarefa(id);
 
-	// DELETE
+        CategoriaEntity categoriaEntity = categoriaService.buscaIdBanco(atualizacao.getCategoriaId());
 
-	@Override
-	public void deletarTarefa(Long id) {
-		tarefaRepository.deleteById(id);
-	}
+        return new TarefaDto(tarefaRepository.save(tarefaEntity.atualizaRegistro(atualizacao, categoriaEntity)));
 
-	/*
-	 * Validações
-	 */
+    }
 
-	public TarefaEntity retornaBancoTarefa(Long id) {
-		return tarefaRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("ERRO: A tarefa não existe nos registros"));
-	}
+    // DELETE
 
-	public void verificaDatas(LocalDate dataCriacao, LocalDate dataFim) {
-		if (!dataCriacao.isEqual(LocalDate.now())) {
-			throw new IllegalArgumentException("ERRO: A data de criação deve ser igual a HOJE");
-		}
-		if (!dataFim.isAfter(dataCriacao)) {
-			throw new IllegalArgumentException("ERRO: A data de expiração deve ser após a data de criação");
-		}
-	}
+    @Override
+    public void deletarTarefa(Long id) {
+        tarefaRepository.deleteById(id);
+    }
 
-	
+    /*
+     * Validações
+     */
 
-	
+    public TarefaEntity retornaBancoTarefa(Long id) {
+        return tarefaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ERRO: A tarefa não existe nos registros"));
+    }
 
-	
+    public void verificaDatas(LocalDate dataCriacao, LocalDate dataFim) {
+        if (!dataCriacao.isEqual(LocalDate.now())) {
+            throw new IllegalArgumentException("ERRO: A data de criação deve ser igual a HOJE");
+        }
+        if (!dataFim.isAfter(dataCriacao)) {
+            throw new IllegalArgumentException("ERRO: A data de expiração deve ser após a data de criação");
+        }
+    }
+
 
 }

@@ -48,9 +48,9 @@ public class TarefaController {
 		return tarefaService.buscarTarefa(id);
 	}
 	
-	@GetMapping("/tarefas-incompletas")
-	public List<TarefaDto> buscarTarefasIncompletas(){
-		return tarefaService.buscarTarefasIncompletas();
+	@GetMapping("/tarefas-incompletas/{id}")
+	public List<TarefaDto> buscarTarefasIncompletas(@PathVariable  Long id){
+		return tarefaService.buscarTarefasIncompletas(id);
 	}
 	
 	@GetMapping("/tarefas-titulo/{titulo}")
@@ -74,7 +74,7 @@ public class TarefaController {
 	
 	// PUT
 
-	@PutMapping("tarefas/{id}")
+	@PutMapping("/tarefas/{id}")
 	public ResponseEntity<?> atualizarTarefa(@PathVariable("id") Long id, @RequestBody TarefaDto atualizacao) {
 		try {
 			return ResponseEntity.ok(tarefaService.atualizarTarefa(id, atualizacao));
